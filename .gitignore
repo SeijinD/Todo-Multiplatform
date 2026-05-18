@@ -1,0 +1,50 @@
+*.iml
+.kotlin
+.gradle
+**/build/
+xcuserdata
+!src/**/build/
+local.properties
+.idea
+.DS_Store
+captures
+.externalNativeBuild
+.cxx
+*.xcodeproj/*
+!*.xcodeproj/project.pbxproj
+!*.xcodeproj/xcshareddata/
+!*.xcodeproj/project.xcworkspace/
+!*.xcworkspace/contents.xcworkspacedata
+**/xcshareddata/WorkspaceSettings.xcsettings
+node_modules/
+
+# Gradle wrapper jar (keep it)
+!gradle/wrapper/gradle-wrapper.jar
+
+# Secrets / env
+local.properties
+*.env
+secrets.properties
+
+# iOS
+DerivedData/
+*.ipa
+*.dSYM.zip
+*.dSYM
+Pods/
+.build/
+
+# Desktop output
+*.exe
+*.msi
+*.dmg
+*.pkg
+
+# Web
+dist/
+.cache/
+.parcel-cache/
+kotlin-js-store/
+
+# OS
+Thumbs.db
