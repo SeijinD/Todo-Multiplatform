@@ -1,0 +1,12 @@
+name: gradle-setup
+description: Set up JDK and Gradle for CI builds
+runs:
+  using: composite
+  steps:
+    - name: Set up JDK
+      uses: actions/setup-java@v4
+      with:
+        distribution: corretto
+        java-version: "21"
+    - name: Set up Gradle
+      uses: gradle/actions/setup-gradle@v4
