@@ -1,4 +1,5 @@
 import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
+import org.jetbrains.kotlin.gradle.targets.js.webpack.KotlinWebpackConfig
 
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
@@ -7,19 +8,23 @@ plugins {
 }
 
 kotlin {
-    js {
-        browser()
-        binaries.executable()
-    }
-
     @OptIn(ExperimentalWasmDsl::class)
     wasmJs {
-        browser()
+        val wasmRes = layout.projectDirectory.dir("src/wasmJsMain/resources").asFile.absolutePath
+        outputModuleName.set("webApp")
+        browser {
+            commonWebpackConfig {
+                outputFileName = "webApp.js"
+                devServer = (devServer ?: KotlinWebpackConfig.DevServer()).apply {
+                    static(wasmRes)
+                }
+            }
+        }
         binaries.executable()
     }
 
     sourceSets {
-        commonMain.dependencies {
+        wasmJsMain.dependencies {
             implementation(projects.app.shared)
 
             implementation(libs.compose.ui)
