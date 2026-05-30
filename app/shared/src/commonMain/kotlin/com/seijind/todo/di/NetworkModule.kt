@@ -7,7 +7,7 @@ import io.ktor.client.engine.HttpClientEngine
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
 
-val coreModule = module {
+val networkModule = module {
     single<HttpClient> {
         HttpClientFactory.create(
             engine = get<HttpClientEngine>(),

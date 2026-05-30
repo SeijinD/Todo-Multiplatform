@@ -8,5 +8,13 @@ import org.koin.dsl.module
 
 val presentationModule = module {
     viewModelOf(::TodoListViewModel)
-    viewModel { (id: String?) -> TodoDetailViewModel(get(), id) }
+    viewModel { (id: String?) ->
+        TodoDetailViewModel(
+            observeTodo = get(),
+            createTodo = get(),
+            updateTodo = get(),
+            deleteTodo = get(),
+            todoId = id,
+        )
+    }
 }
