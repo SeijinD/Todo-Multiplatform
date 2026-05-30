@@ -1,0 +1,29 @@
+<resources>
+    <!-- Network errors -->
+    <string name="error_network_bad_request">Invalid request. Please try again.</string>
+    <string name="error_network_unauthorized">You are not authorized.</string>
+    <string name="error_network_forbidden">Access denied.</string>
+    <string name="error_network_not_found">Not found.</string>
+    <string name="error_network_timeout">Request timed out. Please try again.</string>
+    <string name="error_network_conflict">Conflict with existing data.</string>
+    <string name="error_network_too_many_requests">Too many requests. Please slow down.</string>
+    <string name="error_network_no_internet">No internet connection.</string>
+    <string name="error_network_server">Server error. Please try again later.</string>
+    <string name="error_network_serialization">Could not process server response.</string>
+
+    <!-- Local errors -->
+    <string name="error_local_not_found">Item not found.</string>
+    <string name="error_local_database">Database error.</string>
+    <string name="error_local_disk_full">Storage is full.</string>
+
+    <!-- Todo domain errors -->
+    <string name="error_todo_empty_title">Title cannot be empty.</string>
+    <string name="error_todo_title_too_long">Title is too long.</string>
+    <string name="error_todo_notes_too_long">Notes are too long.</string>
+    <string name="error_todo_not_found">Todo not found.</string>
+    <string name="error_todo_save_failed">Failed to save todo.</string>
+    <string name="error_todo_delete_failed">Failed to delete todo.</string>
+
+    <!-- Generic -->
+    <string name="error_unknown">Something went wrong.</string>
+</resources>

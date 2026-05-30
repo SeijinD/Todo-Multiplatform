@@ -4,13 +4,14 @@ import androidx.compose.runtime.getValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation3.runtime.EntryProviderScope
 import androidx.navigation3.runtime.NavKey
+import com.seijind.todo.ui.list.composable.TodoListScreen
+import com.seijind.todo.ui.navigation.Navigator
 import com.seijind.todo.ui.navigation.Routes
-import com.seijind.todo.ui.util.ObserveAsEvents
+import com.seijind.todo.ui.core.util.ObserveAsEvents
 import org.koin.compose.viewmodel.koinViewModel
 
 fun EntryProviderScope<NavKey>.todoListScreen(
-    onNavigateToCreate: () -> Unit,
-    onNavigateToDetail: (String) -> Unit,
+    navigator: Navigator,
 ) {
     entry<Routes.TodoList> {
         val viewModel = koinViewModel<TodoListViewModel>()
@@ -18,8 +19,9 @@ fun EntryProviderScope<NavKey>.todoListScreen(
 
         ObserveAsEvents(viewModel.events) { event ->
             when (event) {
-                TodoListEvent.NavigateToCreate -> onNavigateToCreate()
-                is TodoListEvent.NavigateToDetail -> onNavigateToDetail(event.id)
+                TodoListEvent.NavigateToCreate -> navigator.navigateTo(Routes.TodoDetail(id = null))
+                is TodoListEvent.NavigateToDetail -> navigator.navigateTo(Routes.TodoDetail(id = event.id))
+                TodoListEvent.NavigateToSettings -> navigator.navigateTo(Routes.Settings)
             }
         }
 

@@ -10,4 +10,7 @@ sealed interface Routes : NavKey {
 
     @Serializable
     data class TodoDetail(val id: String? = null) : Routes
+
+    @Serializable
+    data object Settings : Routes
 }
