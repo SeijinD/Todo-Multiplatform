@@ -2,19 +2,18 @@ package com.seijind.todo.ui.list
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.seijind.todo.domain.usecase.DeleteTodoUseCase
-import com.seijind.todo.domain.usecase.ObserveTodosUseCase
-import com.seijind.todo.domain.usecase.RefreshTodosUseCase
-import com.seijind.todo.domain.usecase.SetTodoCompletedUseCase
+import com.seijind.todo.domain.todo.usecase.DeleteTodoUseCase
+import com.seijind.todo.domain.todo.usecase.ObserveTodosUseCase
+import com.seijind.todo.domain.todo.usecase.RefreshTodosUseCase
+import com.seijind.todo.domain.todo.usecase.SetTodoCompletedUseCase
+import com.seijind.todo.ui.core.util.toUiText
 import com.seijind.todo.util.Result
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.receiveAsFlow
-import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
@@ -26,15 +25,15 @@ class TodoListViewModel(
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(TodoListState())
-    val state: StateFlow<TodoListState> = _state
-        .onStart {
-            startObservingTodos()
-            refresh()
-        }
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), TodoListState())
+    val state: StateFlow<TodoListState> = _state.asStateFlow()
 
     private val _events = Channel<TodoListEvent>(Channel.BUFFERED)
     val events: Flow<TodoListEvent> = _events.receiveAsFlow()
+
+    init {
+        startObservingTodos()
+        refresh()
+    }
 
     private fun startObservingTodos() {
         viewModelScope.launch {
@@ -51,6 +50,7 @@ class TodoListViewModel(
             is TodoListAction.TodoClicked -> _events.trySend(TodoListEvent.NavigateToDetail(action.id))
             is TodoListAction.ToggleCompleted -> toggle(action.id, action.isCompleted)
             is TodoListAction.DeleteTodo -> delete(action.id)
+            TodoListAction.SettingsClicked -> _events.trySend(TodoListEvent.NavigateToSettings)
             TodoListAction.DismissError -> _state.update { it.copy(errorMessage = null) }
         }
     }
@@ -62,7 +62,7 @@ class TodoListViewModel(
             _state.update {
                 it.copy(
                     isRefreshing = false,
-                    errorMessage = (result as? Result.Error)?.let { "Failed to load todos" },
+                    errorMessage = (result as? Result.Error)?.error?.toUiText(),
                 )
             }
         }
@@ -70,16 +70,18 @@ class TodoListViewModel(
 
     private fun toggle(id: String, isCompleted: Boolean) {
         viewModelScope.launch {
-            if (setTodoCompleted(id, isCompleted) is Result.Error) {
-                _state.update { it.copy(errorMessage = "Failed to update todo") }
+            val result = setTodoCompleted(id, isCompleted)
+            if (result is Result.Error) {
+                _state.update { it.copy(errorMessage = result.error.toUiText()) }
             }
         }
     }
 
     private fun delete(id: String) {
         viewModelScope.launch {
-            if (deleteTodo(id) is Result.Error) {
-                _state.update { it.copy(errorMessage = "Failed to delete todo") }
+            val result = deleteTodo(id)
+            if (result is Result.Error) {
+                _state.update { it.copy(errorMessage = result.error.toUiText()) }
             }
         }
     }

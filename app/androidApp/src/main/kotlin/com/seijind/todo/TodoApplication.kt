@@ -1,7 +1,7 @@
 package com.seijind.todo
 
 import android.app.Application
-import com.seijind.todo.di.initKoin
+import com.seijind.todo.di.core.initKoin
 import org.koin.android.ext.koin.androidContext
 
 class TodoApplication : Application() {

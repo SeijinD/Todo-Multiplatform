@@ -1,15 +1,19 @@
 package com.seijind.todo.ui.detail
 
+import com.seijind.todo.ui.core.util.UiText
+
 data class TodoDetailState(
     val id: String? = null,
     val title: String = "",
     val notes: String = "",
     val isCompleted: Boolean = false,
-    val isNew: Boolean = true,
     val isSaving: Boolean = false,
-    val titleError: String? = null,
-    val errorMessage: String? = null,
-)
+    val titleError: UiText? = null,
+    val notesError: UiText? = null,
+    val errorMessage: UiText? = null,
+) {
+    val isNew: Boolean get() = id == null
+}
 
 sealed interface TodoDetailAction {
     data class TitleChanged(val title: String) : TodoDetailAction

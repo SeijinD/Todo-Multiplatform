@@ -2,15 +2,20 @@ package com.seijind.todo.ui.detail
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.seijind.todo.domain.usecase.CreateTodoUseCase
-import com.seijind.todo.domain.usecase.DeleteTodoUseCase
-import com.seijind.todo.domain.usecase.ObserveTodoUseCase
-import com.seijind.todo.domain.usecase.UpdateTodoUseCase
+import com.seijind.todo.domain.todo.usecase.CreateTodoUseCase
+import com.seijind.todo.domain.todo.usecase.DeleteTodoUseCase
+import com.seijind.todo.domain.todo.usecase.ObserveTodoUseCase
+import com.seijind.todo.domain.todo.usecase.UpdateTodoUseCase
 import com.seijind.todo.dto.CreateTodoRequest
 import com.seijind.todo.dto.UpdateTodoRequest
+import com.seijind.todo.ui.core.util.UiText
+import com.seijind.todo.ui.core.util.toUiText
 import com.seijind.todo.util.Result
-import com.seijind.todo.util.TodoError
+import com.seijind.todo.util.validateNotes
 import com.seijind.todo.util.validateTitle
+import todomultiplatform.app.shared.generated.resources.Res
+import todomultiplatform.app.shared.generated.resources.error_todo_save_failed
+import todomultiplatform.app.shared.generated.resources.error_todo_delete_failed
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -26,10 +31,10 @@ class TodoDetailViewModel(
     private val createTodo: CreateTodoUseCase,
     private val updateTodo: UpdateTodoUseCase,
     private val deleteTodo: DeleteTodoUseCase,
-    private val todoId: String?,
+    todoId: String?,
 ) : ViewModel() {
 
-    private val _state = MutableStateFlow(TodoDetailState(id = todoId, isNew = todoId == null))
+    private val _state = MutableStateFlow(TodoDetailState(id = todoId))
     val state: StateFlow<TodoDetailState> = _state.asStateFlow()
 
     private val _events = Channel<TodoDetailEvent>(Channel.BUFFERED)
@@ -47,7 +52,6 @@ class TodoDetailViewModel(
                     title = todo.title,
                     notes = todo.notes,
                     isCompleted = todo.isCompleted,
-                    isNew = false,
                 )
             }
         }
@@ -56,7 +60,7 @@ class TodoDetailViewModel(
     fun onAction(action: TodoDetailAction) {
         when (action) {
             is TodoDetailAction.TitleChanged -> _state.update { it.copy(title = action.title, titleError = null) }
-            is TodoDetailAction.NotesChanged -> _state.update { it.copy(notes = action.notes) }
+            is TodoDetailAction.NotesChanged -> _state.update { it.copy(notes = action.notes, notesError = null) }
             is TodoDetailAction.ToggleCompleted -> _state.update { it.copy(isCompleted = action.isCompleted) }
             TodoDetailAction.Save -> save()
             TodoDetailAction.Delete -> delete()
@@ -67,15 +71,13 @@ class TodoDetailViewModel(
 
     private fun save() {
         val current = _state.value
-        val validation = validateTitle(current.title)
-        if (validation is Result.Error) {
+        val titleValidation = validateTitle(current.title)
+        val notesValidation = validateNotes(current.notes)
+        if (titleValidation is Result.Error || notesValidation is Result.Error) {
             _state.update {
                 it.copy(
-                    titleError = when (validation.error) {
-                        TodoError.EMPTY_TITLE -> "Title cannot be empty"
-                        TodoError.TITLE_TOO_LONG -> "Title is too long"
-                        else -> "Invalid title"
-                    },
+                    titleError = (titleValidation as? Result.Error)?.error?.toUiText(),
+                    notesError = (notesValidation as? Result.Error)?.error?.toUiText(),
                 )
             }
             return
@@ -98,8 +100,10 @@ class TodoDetailViewModel(
                 )
             }
             when (result) {
-                is Result.Success -> _events.send(TodoDetailEvent.NavigateBack)
-                is Result.Error -> _state.update { it.copy(isSaving = false, errorMessage = "Failed to save") }
+                is Result.Success -> _events.trySend(TodoDetailEvent.NavigateBack)
+                is Result.Error -> _state.update {
+                    it.copy(isSaving = false, errorMessage = UiText.StringRes(Res.string.error_todo_save_failed))
+                }
             }
         }
     }
@@ -112,8 +116,10 @@ class TodoDetailViewModel(
         viewModelScope.launch {
             _state.update { it.copy(isSaving = true) }
             when (deleteTodo(id)) {
-                is Result.Success -> _events.send(TodoDetailEvent.NavigateBack)
-                is Result.Error -> _state.update { it.copy(isSaving = false, errorMessage = "Failed to delete") }
+                is Result.Success -> _events.trySend(TodoDetailEvent.NavigateBack)
+                is Result.Error -> _state.update {
+                    it.copy(isSaving = false, errorMessage = UiText.StringRes(Res.string.error_todo_delete_failed))
+                }
             }
         }
     }

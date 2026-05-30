@@ -4,6 +4,8 @@ import androidx.room3.ConstructedBy
 import androidx.room3.Database
 import androidx.room3.RoomDatabase
 import androidx.room3.RoomDatabaseConstructor
+import com.seijind.todo.data.todo.local.TodoDao
+import com.seijind.todo.data.todo.local.TodoEntity
 
 @Database(
     entities = [TodoEntity::class],

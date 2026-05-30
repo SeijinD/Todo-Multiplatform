@@ -2,7 +2,7 @@ package com.seijind.todo
 
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
-import com.seijind.todo.di.initKoin
+import com.seijind.todo.di.core.initKoin
 
 fun main() {
     initKoin()

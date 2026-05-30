@@ -28,14 +28,9 @@ sealed interface DataError : Error {
 enum class TodoError : Error {
     EMPTY_TITLE,
     TITLE_TOO_LONG,
+    NOTES_TOO_LONG,
     NOT_FOUND,
     SAVE_FAILED,
     DELETE_FAILED,
     UNKNOWN
-}
-
-fun DataError.toTodoError(): TodoError = when (this) {
-    DataError.Network.NOT_FOUND, DataError.Local.NOT_FOUND -> TodoError.NOT_FOUND
-    DataError.Network.SERIALIZATION -> TodoError.UNKNOWN
-    else -> TodoError.UNKNOWN
 }

@@ -13,3 +13,8 @@ fun validateTitle(title: String): EmptyResult<TodoError> {
         else -> Result.Success(Unit)
     }
 }
+
+fun validateNotes(notes: String): EmptyResult<TodoError> = when {
+    notes.length > TodoLimits.NOTES_MAX_LENGTH -> Result.Error(TodoError.NOTES_TOO_LONG)
+    else -> Result.Success(Unit)
+}
