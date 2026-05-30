@@ -2,7 +2,10 @@ package com.seijind.todo.ui.detail
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.seijind.todo.domain.TodoRepository
+import com.seijind.todo.domain.usecase.CreateTodoUseCase
+import com.seijind.todo.domain.usecase.DeleteTodoUseCase
+import com.seijind.todo.domain.usecase.ObserveTodoUseCase
+import com.seijind.todo.domain.usecase.UpdateTodoUseCase
 import com.seijind.todo.dto.CreateTodoRequest
 import com.seijind.todo.dto.UpdateTodoRequest
 import com.seijind.todo.util.Result
@@ -19,7 +22,10 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class TodoDetailViewModel(
-    private val repository: TodoRepository,
+    private val observeTodo: ObserveTodoUseCase,
+    private val createTodo: CreateTodoUseCase,
+    private val updateTodo: UpdateTodoUseCase,
+    private val deleteTodo: DeleteTodoUseCase,
     private val todoId: String?,
 ) : ViewModel() {
 
@@ -35,7 +41,7 @@ class TodoDetailViewModel(
 
     private fun loadTodo(id: String) {
         viewModelScope.launch {
-            val todo = repository.observeTodo(id).first() ?: return@launch
+            val todo = observeTodo(id).first() ?: return@launch
             _state.update {
                 it.copy(
                     title = todo.title,
@@ -78,11 +84,11 @@ class TodoDetailViewModel(
         viewModelScope.launch {
             _state.update { it.copy(isSaving = true, errorMessage = null) }
             val result = if (current.id == null) {
-                repository.create(
+                createTodo(
                     CreateTodoRequest(title = current.title.trim(), notes = current.notes.ifBlank { null }),
                 )
             } else {
-                repository.update(
+                updateTodo(
                     id = current.id,
                     request = UpdateTodoRequest(
                         title = current.title.trim(),
@@ -105,7 +111,7 @@ class TodoDetailViewModel(
         }
         viewModelScope.launch {
             _state.update { it.copy(isSaving = true) }
-            when (repository.delete(id)) {
+            when (deleteTodo(id)) {
                 is Result.Success -> _events.send(TodoDetailEvent.NavigateBack)
                 is Result.Error -> _state.update { it.copy(isSaving = false, errorMessage = "Failed to delete") }
             }

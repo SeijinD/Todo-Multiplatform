@@ -2,14 +2,16 @@ package com.seijind.todo.ui.list
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.seijind.todo.domain.TodoRepository
+import com.seijind.todo.domain.usecase.DeleteTodoUseCase
+import com.seijind.todo.domain.usecase.ObserveTodosUseCase
+import com.seijind.todo.domain.usecase.RefreshTodosUseCase
+import com.seijind.todo.domain.usecase.SetTodoCompletedUseCase
 import com.seijind.todo.util.Result
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
@@ -17,13 +19,16 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class TodoListViewModel(
-    private val repository: TodoRepository,
+    private val observeTodos: ObserveTodosUseCase,
+    private val refreshTodos: RefreshTodosUseCase,
+    private val setTodoCompleted: SetTodoCompletedUseCase,
+    private val deleteTodo: DeleteTodoUseCase,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(TodoListState())
     val state: StateFlow<TodoListState> = _state
         .onStart {
-            observeTodos()
+            startObservingTodos()
             refresh()
         }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), TodoListState())
@@ -31,9 +36,9 @@ class TodoListViewModel(
     private val _events = Channel<TodoListEvent>(Channel.BUFFERED)
     val events: Flow<TodoListEvent> = _events.receiveAsFlow()
 
-    private fun observeTodos() {
+    private fun startObservingTodos() {
         viewModelScope.launch {
-            repository.observeTodos().collect { todos ->
+            observeTodos().collect { todos ->
                 _state.update { it.copy(todos = todos) }
             }
         }
@@ -53,7 +58,7 @@ class TodoListViewModel(
     private fun refresh() {
         viewModelScope.launch {
             _state.update { it.copy(isRefreshing = true) }
-            val result = repository.refresh()
+            val result = refreshTodos()
             _state.update {
                 it.copy(
                     isRefreshing = false,
@@ -65,7 +70,7 @@ class TodoListViewModel(
 
     private fun toggle(id: String, isCompleted: Boolean) {
         viewModelScope.launch {
-            if (repository.setCompleted(id, isCompleted) is Result.Error) {
+            if (setTodoCompleted(id, isCompleted) is Result.Error) {
                 _state.update { it.copy(errorMessage = "Failed to update todo") }
             }
         }
@@ -73,7 +78,7 @@ class TodoListViewModel(
 
     private fun delete(id: String) {
         viewModelScope.launch {
-            if (repository.delete(id) is Result.Error) {
+            if (deleteTodo(id) is Result.Error) {
                 _state.update { it.copy(errorMessage = "Failed to delete todo") }
             }
         }
