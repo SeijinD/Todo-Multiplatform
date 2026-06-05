@@ -4,7 +4,7 @@ import com.seijind.todo.dto.CreateTodoRequest
 import com.seijind.todo.dto.ErrorResponse
 import com.seijind.todo.dto.UpdateTodoRequest
 import com.seijind.todo.plugins.respondError
-import com.seijind.todo.todo.domain.TodoRepository
+import com.seijind.todo.todo.domain.TodoService
 import com.seijind.todo.util.Result
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.ApplicationCall
@@ -17,24 +17,24 @@ import io.ktor.server.routing.post
 import io.ktor.server.routing.put
 import io.ktor.server.routing.route
 
-fun Route.todoRoutes(repository: TodoRepository) {
+fun Route.todoRoutes(service: TodoService) {
     route("/todos") {
         get {
-            call.respond(repository.all())
+            call.respond(service.all().map { it.toDto() })
         }
 
         get("/{id}") {
             val id = call.requireId() ?: return@get
-            when (val result = repository.get(id)) {
-                is Result.Success -> call.respond(result.data)
+            when (val result = service.get(id)) {
+                is Result.Success -> call.respond(result.data.toDto())
                 is Result.Error -> call.respondError(result.error)
             }
         }
 
         post {
             val request = call.receive<CreateTodoRequest>()
-            when (val result = repository.create(request)) {
-                is Result.Success -> call.respond(HttpStatusCode.Created, result.data)
+            when (val result = service.create(request)) {
+                is Result.Success -> call.respond(HttpStatusCode.Created, result.data.toDto())
                 is Result.Error -> call.respondError(result.error)
             }
         }
@@ -42,15 +42,15 @@ fun Route.todoRoutes(repository: TodoRepository) {
         put("/{id}") {
             val id = call.requireId() ?: return@put
             val request = call.receive<UpdateTodoRequest>()
-            when (val result = repository.update(id, request)) {
-                is Result.Success -> call.respond(result.data)
+            when (val result = service.update(id, request)) {
+                is Result.Success -> call.respond(result.data.toDto())
                 is Result.Error -> call.respondError(result.error)
             }
         }
 
         delete("/{id}") {
             val id = call.requireId() ?: return@delete
-            when (val result = repository.delete(id)) {
+            when (val result = service.delete(id)) {
                 is Result.Success -> call.respond(HttpStatusCode.NoContent)
                 is Result.Error -> call.respondError(result.error)
             }

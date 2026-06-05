@@ -13,7 +13,7 @@ fun main() {
         .start(wait = true)
 }
 
-fun Application.module() {
+suspend fun Application.module() {
     configureKoin()
     configureSerialization()
     configureStatusPages()
