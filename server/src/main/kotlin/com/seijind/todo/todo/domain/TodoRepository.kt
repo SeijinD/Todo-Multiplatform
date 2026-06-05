@@ -1,21 +1,16 @@
 package com.seijind.todo.todo.domain
 
-import com.seijind.todo.dto.CreateTodoRequest
-import com.seijind.todo.dto.TodoDto
-import com.seijind.todo.dto.UpdateTodoRequest
-import com.seijind.todo.util.EmptyResult
-import com.seijind.todo.util.Result
-import com.seijind.todo.util.TodoError
+import com.seijind.todo.todo.domain.model.Todo
+import com.seijind.todo.todo.domain.model.TodoId
 
+/** Pure storage abstraction. No business rules, no validation — those live in TodoService. */
 interface TodoRepository {
 
-    suspend fun all(): List<TodoDto>
+    suspend fun all(): List<Todo>
 
-    suspend fun get(id: String): Result<TodoDto, TodoError>
+    suspend fun get(id: TodoId): Todo?
 
-    suspend fun create(request: CreateTodoRequest): Result<TodoDto, TodoError>
+    suspend fun save(todo: Todo): Todo
 
-    suspend fun update(id: String, request: UpdateTodoRequest): Result<TodoDto, TodoError>
-
-    suspend fun delete(id: String): EmptyResult<TodoError>
+    suspend fun delete(id: TodoId): Boolean
 }
