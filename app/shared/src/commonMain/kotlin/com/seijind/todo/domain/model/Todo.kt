@@ -1,4 +1,4 @@
-package com.seijind.todo.model
+package com.seijind.todo.domain.model
 
 data class Todo(
     val id: String,

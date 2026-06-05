@@ -2,7 +2,7 @@ package com.seijind.todo.data.todo.mapper
 
 import com.seijind.todo.data.todo.local.TodoEntity
 import com.seijind.todo.dto.TodoDto
-import com.seijind.todo.model.Todo
+import com.seijind.todo.domain.model.Todo
 
 fun TodoDto.toDomain(): Todo = Todo(
     id = id,

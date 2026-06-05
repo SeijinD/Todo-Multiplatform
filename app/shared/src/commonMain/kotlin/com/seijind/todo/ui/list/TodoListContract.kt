@@ -1,6 +1,6 @@
 package com.seijind.todo.ui.list
 
-import com.seijind.todo.model.Todo
+import com.seijind.todo.domain.model.Todo
 import com.seijind.todo.ui.core.util.UiText
 
 data class TodoListState(

@@ -1,7 +1,7 @@
 package com.seijind.todo.ui.core.util
 
 import androidx.compose.runtime.Composable
-import com.seijind.todo.util.DataError
+import com.seijind.todo.domain.util.DataError
 import com.seijind.todo.util.Error
 import com.seijind.todo.util.TodoError
 import org.jetbrains.compose.resources.StringResource

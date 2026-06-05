@@ -2,8 +2,8 @@ package com.seijind.todo.domain.todo
 
 import com.seijind.todo.dto.CreateTodoRequest
 import com.seijind.todo.dto.UpdateTodoRequest
-import com.seijind.todo.model.Todo
-import com.seijind.todo.util.DataError
+import com.seijind.todo.domain.model.Todo
+import com.seijind.todo.domain.util.DataError
 import com.seijind.todo.util.EmptyResult
 import kotlinx.coroutines.flow.Flow
 

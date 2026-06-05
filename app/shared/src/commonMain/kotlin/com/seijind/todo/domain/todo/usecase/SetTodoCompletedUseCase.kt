@@ -1,7 +1,7 @@
 package com.seijind.todo.domain.todo.usecase
 
 import com.seijind.todo.domain.todo.TodoRepository
-import com.seijind.todo.util.DataError
+import com.seijind.todo.domain.util.DataError
 import com.seijind.todo.util.EmptyResult
 
 class SetTodoCompletedUseCase(private val repository: TodoRepository) {
