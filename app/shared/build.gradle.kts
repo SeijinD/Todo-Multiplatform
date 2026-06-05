@@ -29,7 +29,7 @@ kotlin {
         browser()
     }
 
-    androidLibrary {
+    android {
        namespace = "com.seijind.todo.app.shared"
        compileSdk = libs.versions.android.compileSdk.get().toInt()
        minSdk = libs.versions.android.minSdk.get().toInt()
@@ -91,6 +91,7 @@ kotlin {
             implementation(libs.androidx.navigation3.runtime)
             implementation(libs.jetbrains.navigation3.ui)
             implementation(libs.jetbrains.lifecycle.viewmodel.navigation3)
+            implementation(libs.jetbrains.adaptive.navigation3)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
