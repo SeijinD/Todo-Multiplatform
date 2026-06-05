@@ -4,7 +4,7 @@ import com.seijind.todo.dto.CreateTodoRequest
 import com.seijind.todo.dto.TodoDto
 import com.seijind.todo.dto.UpdateTodoRequest
 import com.seijind.todo.data.util.safeCall
-import com.seijind.todo.util.DataError
+import com.seijind.todo.domain.util.DataError
 import com.seijind.todo.util.EmptyResult
 import com.seijind.todo.util.Result
 import io.ktor.client.HttpClient

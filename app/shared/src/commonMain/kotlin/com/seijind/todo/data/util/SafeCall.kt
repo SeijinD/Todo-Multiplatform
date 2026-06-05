@@ -1,6 +1,6 @@
 package com.seijind.todo.data.util
 
-import com.seijind.todo.util.DataError
+import com.seijind.todo.domain.util.DataError
 import com.seijind.todo.util.Result
 import io.ktor.client.call.body
 import io.ktor.client.network.sockets.SocketTimeoutException

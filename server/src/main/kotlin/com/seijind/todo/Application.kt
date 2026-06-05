@@ -1,15 +1,12 @@
 package com.seijind.todo
 
-import com.seijind.todo.routes.todoRoutes
-import io.ktor.serialization.kotlinx.json.json
+import com.seijind.todo.plugins.configureKoin
+import com.seijind.todo.plugins.configureRouting
+import com.seijind.todo.plugins.configureSerialization
+import com.seijind.todo.plugins.configureStatusPages
 import io.ktor.server.application.Application
-import io.ktor.server.application.install
 import io.ktor.server.engine.embeddedServer
 import io.ktor.server.netty.Netty
-import io.ktor.server.plugins.contentnegotiation.ContentNegotiation
-import io.ktor.server.response.respondText
-import io.ktor.server.routing.get
-import io.ktor.server.routing.routing
 
 fun main() {
     embeddedServer(Netty, port = 8080, host = "0.0.0.0", module = Application::module)
@@ -17,13 +14,8 @@ fun main() {
 }
 
 fun Application.module() {
-    install(ContentNegotiation) {
-        json()
-    }
-    routing {
-        get("/") {
-            call.respondText("Todo server running")
-        }
-        todoRoutes()
-    }
+    configureKoin()
+    configureSerialization()
+    configureStatusPages()
+    configureRouting()
 }

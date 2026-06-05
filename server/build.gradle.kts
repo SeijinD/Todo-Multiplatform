@@ -15,7 +15,10 @@ dependencies {
     implementation(libs.ktor.serverCore)
     implementation(libs.ktor.serverNetty)
     implementation(libs.ktor.serverContentNegotiation)
+    implementation(libs.ktor.serverStatusPages)
     implementation(libs.ktor.serializationKotlinxJson)
+    implementation(libs.koin.ktor)
+    implementation(libs.koin.loggerSlf4j)
     testImplementation(libs.ktor.serverTestHost)
     testImplementation(libs.kotlin.testJunit)
 }

@@ -7,9 +7,9 @@ import com.seijind.todo.data.todo.remote.TodoApi
 import com.seijind.todo.domain.todo.TodoRepository
 import com.seijind.todo.dto.CreateTodoRequest
 import com.seijind.todo.dto.UpdateTodoRequest
-import com.seijind.todo.model.Todo
+import com.seijind.todo.domain.model.Todo
 import com.seijind.todo.util.AppDispatchers
-import com.seijind.todo.util.DataError
+import com.seijind.todo.domain.util.DataError
 import com.seijind.todo.util.EmptyResult
 import com.seijind.todo.util.Result
 import com.seijind.todo.util.asEmptyResult
