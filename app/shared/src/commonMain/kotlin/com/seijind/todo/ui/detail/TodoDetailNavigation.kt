@@ -1,5 +1,7 @@
 package com.seijind.todo.ui.detail
 
+import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
+import androidx.compose.material3.adaptive.navigation3.ListDetailSceneStrategy
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation3.runtime.EntryProviderScope
@@ -11,10 +13,13 @@ import com.seijind.todo.ui.core.util.ObserveAsEvents
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 
+@OptIn(ExperimentalMaterial3AdaptiveApi::class)
 fun EntryProviderScope<NavKey>.todoDetailScreen(
     navigator: Navigator,
 ) {
-    entry<Routes.TodoDetail> { route ->
+    entry<Routes.TodoDetail>(
+        metadata = ListDetailSceneStrategy.detailPane(),
+    ) { route ->
         val viewModel = koinViewModel<TodoDetailViewModel> { parametersOf(route.id) }
         val state by viewModel.state.collectAsStateWithLifecycle()
 

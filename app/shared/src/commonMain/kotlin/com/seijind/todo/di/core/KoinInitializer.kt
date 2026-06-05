@@ -18,7 +18,6 @@ fun initKoin(appDeclaration: KoinAppDeclaration = {}) {
             networkModule,
             databaseModule,
             dataModule,
-            navigationModule,
             todoModule,
             settingsModule,
         )

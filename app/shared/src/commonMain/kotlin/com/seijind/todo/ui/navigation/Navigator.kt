@@ -1,16 +1,17 @@
 package com.seijind.todo.ui.navigation
 
-import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
+import androidx.navigation3.runtime.NavBackStack
 import androidx.navigation3.runtime.NavKey
+import androidx.navigation3.runtime.rememberNavBackStack
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.TimeMark
 import kotlin.time.TimeSource
 
 class Navigator(
-    startDestination: NavKey = Routes.TodoList,
+    val backStack: NavBackStack<NavKey>,
 ) {
-    val backStack = mutableStateListOf(startDestination)
-
     val currentRoute: NavKey?
         get() = backStack.lastOrNull()
 
@@ -66,4 +67,11 @@ class Navigator(
     private companion object {
         val DEBOUNCE = 350.milliseconds
     }
+}
+
+/** Creates a [Navigator] backed by a persistent back stack, scoped to the composition. */
+@Composable
+fun rememberNavigator(startDestination: NavKey = Routes.TodoList): Navigator {
+    val backStack = rememberNavBackStack(NavigationSavedStateConfiguration, startDestination)
+    return remember(backStack) { Navigator(backStack) }
 }
